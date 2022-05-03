@@ -10,8 +10,11 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import TableSortLabel from '@mui/material/TableSortLabel';
 import Paper from '@mui/material/Paper';
-import { visuallyHidden } from '@mui/utils';
 import AddSharpIcon from '@mui/icons-material/AddSharp';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import IconButton from '@mui/material/IconButton';
+import NewData from './NewData';
 
 function createData(
   id,
@@ -20,7 +23,7 @@ function createData(
   url,
   created,
   updated,
-  edit) 
+  ) 
   { 
     return {
     id,
@@ -29,7 +32,6 @@ function createData(
     url,
     created,
     updated,
-    edit
     };
   }
 
@@ -116,12 +118,12 @@ const headCells = [
     disablePadding: false,
     label: 'Updated at',
   },
-  {
-    id: 'edit',
-    numeric: true,
-    disablePadding: false,
-    label: (<AddSharpIcon/>)
-  },
+  // {
+  //   id: 'edit',
+  //   numeric: true,
+  //   disablePadding: false,
+  //   label: (<AddSharpIcon/>)
+  // },
 ];
 
 function EnhancedTableHead(props) {
@@ -130,6 +132,11 @@ function EnhancedTableHead(props) {
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
+
+  const [ openModal, setOpenModal ] = React.useState(false);
+
+  const isOpenModal = () => setOpenModal(true);
+  const isCloseModal = () => setOpenModal(false);
 
   return (
     <TableHead sx={{padding: 10}}>
@@ -144,18 +151,21 @@ function EnhancedTableHead(props) {
               active={orderBy === headCell.id}
               direction={orderBy === headCell.id ? order : 'asc'}
               onClick={createSortHandler(headCell.id)}
-              sx={{fontSize: 12}}
-            >
+              sx={{fontSize: 12}}>
               {headCell.label}
-              {orderBy === headCell.id ? (
-                <Box component="span" sx={visuallyHidden}>
-                  {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                </Box>
-              ) : null}
             </TableSortLabel>
           </TableCell>
         ))}
+        <TableCell
+          align='right'
+          padding={'normal'}
+          sx={{alignItems: 'center'}}>
+          <IconButton color='primary' onClick={() => isOpenModal()}>
+            <AddSharpIcon/>
+          </IconButton>
+        </TableCell>
       </TableRow>
+      {openModal && <NewData isCloseModal={isCloseModal} openModal={openModal}/>}
     </TableHead>
   );
 }
@@ -274,7 +284,10 @@ export default function EnhancedTable() {
                       <TableCell align="right">{row.url}</TableCell>
                       <TableCell align="right">{row.created}</TableCell>
                       <TableCell align="right">{row.updated}</TableCell>
-                      <TableCell align="right">{row.edit}</TableCell>
+                      <TableCell align="right">
+                        <EditIcon color='secondary'/>
+                        <DeleteIcon color='secondary'/>
+                      </TableCell>
                     </TableRow>
                   );
                 })}
