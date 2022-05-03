@@ -3,7 +3,7 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Modal from '@mui/material/Modal';
 import { useDispatch } from 'react-redux';
-import { setData } from '../features/dataSlice';
+import { addData } from '../features/dataSlice';
 
 const NewData = ({isCloseModal, openModal, setOpenModal}) => {
 
@@ -25,7 +25,7 @@ const NewData = ({isCloseModal, openModal, setOpenModal}) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(setData(
+    dispatch(addData(
       {
       id: Math.floor(Math.random() * 10000000000),
       title,

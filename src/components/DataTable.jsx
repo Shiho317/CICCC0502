@@ -15,27 +15,8 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import NewData from './NewData';
-import { useSelector } from 'react-redux';
 import EditData from './EditData';
-
-// function createData(
-//   id,
-//   title,
-//   state,
-//   url,
-//   created,
-//   updated,
-//   ) 
-//   { 
-//     return {
-//     id,
-//     title,
-//     state,
-//     url,
-//     created,
-//     updated,
-//     };
-//   }
+import DeleteData from './DeleteData';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -159,33 +140,12 @@ EnhancedTableHead.propTypes = {
   rowCount: PropTypes.number.isRequired,
 };
 
-export default function EnhancedTable() {
+export default function EnhancedTable({datas}) {
   const [order, setOrder] = React.useState('asc');
   const [orderBy, setOrderBy] = React.useState('calories');
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
-
-  const datas = useSelector(state => state.data);
-  console.log(datas)
-  // const rows = [datas.map(data => {
-  //   return createData(data.id, data.title, data.state, data.url, data.created, data.updated)
-  // })];
-  // console.log(rows)
-  // const newDatas = datas.map(data => {
-  //   return createData(data.id, data.title, data.state, data.url, data.created, data.updated)
-  // })
-
-  // const addNewDatas = () => {
-  //   const newDatas = datas.map(data => {
-  //     return createData(data.id, data.title, data.state, data.url, data.created, data.updated)
-  //   })
-  //   rows.push(newDatas)
-  // }
-
-  // useEffect(() => {
-  //   addNewDatas()
-  // },[])
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -202,28 +162,7 @@ export default function EnhancedTable() {
     setSelected([]);
   };
 
-  const handleClick = (event, id) => {
-    const selectedIndex = selected.indexOf(id);
-    console.log(selectedIndex)
-    let newSelected = [];
-
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, id);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1),
-      );
-    }
-
-    setSelected(newSelected);
-  };
-
-  const handleChangePage = (event, newPage) => {
+  const handleChangePage = (newPage) => {
     setPage(newPage);
   };
 
@@ -255,6 +194,23 @@ export default function EnhancedTable() {
     setOpenEditor(true)
   }
 
+  const [ deleteOne, setDeleteOne ] = useState({});
+  const [ openConfirm, setOpenConfirm ] = useState(false);
+  const isConfirm = () => setOpenConfirm(true)
+  const isNotConfirm = () => setOpenConfirm(false)
+
+  const deleteDataDetails = (item) => {
+    setDeleteOne({
+      id: item.id,
+      title: item.title,
+      state: item.state,
+      url: item.url,
+      created: item.created,
+      updated: item.updated 
+    })
+    setOpenConfirm(true)
+  }
+
   return (
     <Box sx={{ width: '100%'}}>
       <Paper sx={{ width: '100%', mb: 2 }}>
@@ -283,7 +239,6 @@ export default function EnhancedTable() {
                   return (
                     <TableRow
                       hover
-                      // onClick={(event) => handleClick(event, row.id)}
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
@@ -305,7 +260,7 @@ export default function EnhancedTable() {
                       <TableCell align="right">{row.updated}</TableCell>
                       <TableCell align="right">
                         <EditIcon color='secondary' sx={{cursor: 'pointer'}} onClick={() => findData(row)}/>
-                        <DeleteIcon color='secondary' sx={{cursor: 'pointer'}}/>
+                        <DeleteIcon color='secondary' sx={{cursor: 'pointer'}} onClick={() => deleteDataDetails(row)}/>
                       </TableCell>
                     </TableRow>
                   );
@@ -316,6 +271,7 @@ export default function EnhancedTable() {
                 </TableRow>
               )}
               {openEditor && <EditData editData={editData} isOpen={isOpen} isClose={isClose} setOpenEditor={setOpenEditor}/>}
+              {openConfirm && <DeleteData deleteOne={deleteOne} setOpenConfirm={setOpenConfirm} isConfirm={isConfirm} isNotConfirm={isNotConfirm}/>}
             </TableBody>
           </Table>
         </TableContainer>

@@ -3,10 +3,11 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Modal from '@mui/material/Modal';
 import { useDispatch } from 'react-redux';
-import { setData } from '../features/dataSlice';
+import { updateData } from '../features/dataSlice';
 
 const EditData = ({ editData, isOpen, isClose, setOpenEditor }) => {
 
+  const originId = editData.id
   const [ id, setIsId ] = useState(editData.id)
   const [ title, setIsTitle ] = useState(editData.title)
   const [ state, setIsState ] = useState(editData.state)
@@ -18,9 +19,10 @@ const EditData = ({ editData, isOpen, isClose, setOpenEditor }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(setData(
+    dispatch(updateData(
       {
-      id: Math.floor(Math.random() * 1000000),
+      originId,
+      id,
       title,
       state,
       url,
@@ -36,7 +38,7 @@ const EditData = ({ editData, isOpen, isClose, setOpenEditor }) => {
       open={isOpen} 
       onClose={isClose} 
       sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-      <div style={{background: 'white', padding: '1rem', borderRadius: 5, width: '30rem', height: '35rem', display: 'flex', flexDirection: 'column', gap: '2rem'}}>
+      <div style={{background: 'white', padding: '1rem', borderRadius: 5, width: '30rem', height: '35rem', display: 'flex', flexDirection: 'column', gap: '2rem', overflow: 'scroll'}}>
         <h2 style={{color: 'black'}}>Issue id: {editData.id}</h2>
         <form style={{display: 'flex', flexDirection: 'column', gap: '2rem'}} onSubmit={(e) => handleSubmit(e)}>
           <TextField id="id" label="Id" variant="standard" color='secondary' value={id} onChange={(e) => setIsId(e.target.value)} required/>
