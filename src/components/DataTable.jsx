@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
@@ -16,25 +16,26 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import NewData from './NewData';
 import { useSelector } from 'react-redux';
+import EditData from './EditData';
 
-function createData(
-  id,
-  title,
-  state,
-  url,
-  created,
-  updated,
-  ) 
-  { 
-    return {
-    id,
-    title,
-    state,
-    url,
-    created,
-    updated,
-    };
-  }
+// function createData(
+//   id,
+//   title,
+//   state,
+//   url,
+//   created,
+//   updated,
+//   ) 
+//   { 
+//     return {
+//     id,
+//     title,
+//     state,
+//     url,
+//     created,
+//     updated,
+//     };
+//   }
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -103,12 +104,6 @@ const headCells = [
     disablePadding: false,
     label: 'Updated at',
   },
-  // {
-  //   id: 'edit',
-  //   numeric: true,
-  //   disablePadding: false,
-  //   label: (<AddSharpIcon/>)
-  // },
 ];
 
 function EnhancedTableHead(props) {
@@ -150,7 +145,7 @@ function EnhancedTableHead(props) {
           </IconButton>
         </TableCell>
       </TableRow>
-      {openModal && <NewData isCloseModal={isCloseModal} openModal={openModal}/>}
+      {openModal && <NewData isCloseModal={isCloseModal} openModal={openModal} setOpenModal={setOpenModal}/>}
     </TableHead>
   );
 }
@@ -173,9 +168,24 @@ export default function EnhancedTable() {
 
   const datas = useSelector(state => state.data);
   console.log(datas)
-  const rows = [
-    createData('Cupcake', 305, 3.7, 67, 4.3),
-  ];
+  // const rows = [datas.map(data => {
+  //   return createData(data.id, data.title, data.state, data.url, data.created, data.updated)
+  // })];
+  // console.log(rows)
+  // const newDatas = datas.map(data => {
+  //   return createData(data.id, data.title, data.state, data.url, data.created, data.updated)
+  // })
+
+  // const addNewDatas = () => {
+  //   const newDatas = datas.map(data => {
+  //     return createData(data.id, data.title, data.state, data.url, data.created, data.updated)
+  //   })
+  //   rows.push(newDatas)
+  // }
+
+  // useEffect(() => {
+  //   addNewDatas()
+  // },[])
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -185,19 +195,20 @@ export default function EnhancedTable() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = rows.map((n) => n.title);
+      const newSelecteds = datas.map((n) => n.title);
       setSelected(newSelecteds);
       return;
     }
     setSelected([]);
   };
 
-  const handleClick = (event, name) => {
-    const selectedIndex = selected.indexOf(name);
+  const handleClick = (event, id) => {
+    const selectedIndex = selected.indexOf(id);
+    console.log(selectedIndex)
     let newSelected = [];
 
     if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
+      newSelected = newSelected.concat(selected, id);
     } else if (selectedIndex === 0) {
       newSelected = newSelected.concat(selected.slice(1));
     } else if (selectedIndex === selected.length - 1) {
@@ -225,7 +236,24 @@ export default function EnhancedTable() {
 
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - datas.length) : 0;
+
+  const [ editData, setEditData ] = useState({})
+  const [ openEditor, setOpenEditor ] = useState(false);
+  const isOpen = () => setOpenEditor(true)
+  const isClose = () => setOpenEditor(false)
+
+  const findData = (item) => {
+    setEditData({
+      id: item.id,
+      title: item.title,
+      state: item.state,
+      url: item.url,
+      created: item.created,
+      updated: item.updated
+    })
+    setOpenEditor(true)
+  }
 
   return (
     <Box sx={{ width: '100%'}}>
@@ -241,12 +269,12 @@ export default function EnhancedTable() {
               orderBy={orderBy}
               onSelectAllClick={handleSelectAllClick}
               onRequestSort={handleRequestSort}
-              rowCount={rows.length}
+              rowCount={datas.length}
             />
             <TableBody>
               {/* if you don't need to support IE11, you can replace the `stableSort` call with:
                  rows.slice().sort(getComparator(order, orderBy)) */}
-              {stableSort(rows, getComparator(order, orderBy))
+              {stableSort(datas, getComparator(order, orderBy))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
                   const isItemSelected = isSelected(row.id);
@@ -255,7 +283,7 @@ export default function EnhancedTable() {
                   return (
                     <TableRow
                       hover
-                      onClick={(event) => handleClick(event, row.id)}
+                      // onClick={(event) => handleClick(event, row.id)}
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
@@ -276,7 +304,7 @@ export default function EnhancedTable() {
                       <TableCell align="right">{row.created}</TableCell>
                       <TableCell align="right">{row.updated}</TableCell>
                       <TableCell align="right">
-                        <EditIcon color='secondary' sx={{cursor: 'pointer'}}/>
+                        <EditIcon color='secondary' sx={{cursor: 'pointer'}} onClick={() => findData(row)}/>
                         <DeleteIcon color='secondary' sx={{cursor: 'pointer'}}/>
                       </TableCell>
                     </TableRow>
@@ -287,13 +315,14 @@ export default function EnhancedTable() {
                   <TableCell colSpan={6}/>
                 </TableRow>
               )}
+              {openEditor && <EditData editData={editData} isOpen={isOpen} isClose={isClose} setOpenEditor={setOpenEditor}/>}
             </TableBody>
           </Table>
         </TableContainer>
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
-          count={rows.length}
+          count={datas.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
