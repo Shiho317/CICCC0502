@@ -1,22 +1,22 @@
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
-import Box from '@mui/material/Box';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
-import TableSortLabel from '@mui/material/TableSortLabel';
-import Paper from '@mui/material/Paper';
-import AddSharpIcon from '@mui/icons-material/AddSharp';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import IconButton from '@mui/material/IconButton';
-import NewData from './NewData';
-import EditData from './EditData';
-import DeleteData from './DeleteData';
+import React, { useState } from "react";
+import PropTypes from "prop-types";
+import Box from "@mui/material/Box";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TablePagination from "@mui/material/TablePagination";
+import TableRow from "@mui/material/TableRow";
+import TableSortLabel from "@mui/material/TableSortLabel";
+import Paper from "@mui/material/Paper";
+import AddSharpIcon from "@mui/icons-material/AddSharp";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import IconButton from "@mui/material/IconButton";
+import NewData from "./NewData";
+import EditData from "./EditData";
+import DeleteData from "./DeleteData";
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -29,7 +29,7 @@ function descendingComparator(a, b, orderBy) {
 }
 
 function getComparator(order, orderBy) {
-  return order === 'desc'
+  return order === "desc"
     ? (a, b) => descendingComparator(a, b, orderBy)
     : (a, b) => -descendingComparator(a, b, orderBy);
 }
@@ -50,83 +50,91 @@ function stableSort(array, comparator) {
 
 const headCells = [
   {
-    id: 'id',
+    id: "id",
     numeric: false,
     disablePadding: true,
-    label: 'Id',
+    label: "Id",
   },
   {
-    id: 'title',
+    id: "title",
     numeric: true,
     disablePadding: false,
-    label: 'Title',
+    label: "Title",
   },
   {
-    id: 'state',
+    id: "state",
     numeric: true,
     disablePadding: false,
-    label: 'State',
+    label: "State",
   },
   {
-    id: 'url',
+    id: "url",
     numeric: true,
     disablePadding: false,
-    label: 'Url',
+    label: "Url",
   },
   {
-    id: 'created',
+    id: "created",
     numeric: true,
     disablePadding: false,
-    label: 'Created at',
+    label: "Created at",
   },
   {
-    id: 'updated',
+    id: "updated",
     numeric: true,
     disablePadding: false,
-    label: 'Updated at',
+    label: "Updated at",
   },
 ];
 
 function EnhancedTableHead(props) {
-  const { order, orderBy, onRequestSort } =
-    props;
+  const { order, orderBy, onRequestSort } = props;
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
 
-  const [ openModal, setOpenModal ] = React.useState(false);
+  const [openModal, setOpenModal] = React.useState(false);
 
   const isOpenModal = () => setOpenModal(true);
   const isCloseModal = () => setOpenModal(false);
 
   return (
-    <TableHead sx={{padding: 10}}>
+    <TableHead sx={{ padding: 10 }}>
       <TableRow>
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
-            align={headCell.numeric ? 'right' : 'left'}
-            padding={'normal'}
-            sortDirection={orderBy === headCell.id ? order : false}>
+            align={headCell.numeric ? "right" : "left"}
+            padding={"normal"}
+            sortDirection={orderBy === headCell.id ? order : false}
+          >
             <TableSortLabel
               active={orderBy === headCell.id}
-              direction={orderBy === headCell.id ? order : 'asc'}
+              direction={orderBy === headCell.id ? order : "asc"}
               onClick={createSortHandler(headCell.id)}
-              sx={{fontSize: 12}}>
+              sx={{ fontSize: 12 }}
+            >
               {headCell.label}
             </TableSortLabel>
           </TableCell>
         ))}
         <TableCell
-          align='right'
-          padding={'normal'}
-          sx={{alignItems: 'center'}}>
-          <IconButton color='primary' onClick={() => isOpenModal()}>
-            <AddSharpIcon/>
+          align="right"
+          padding={"normal"}
+          sx={{ alignItems: "center" }}
+        >
+          <IconButton color="primary" onClick={() => isOpenModal()}>
+            <AddSharpIcon />
           </IconButton>
         </TableCell>
       </TableRow>
-      {openModal && <NewData isCloseModal={isCloseModal} openModal={openModal} setOpenModal={setOpenModal}/>}
+      {openModal && (
+        <NewData
+          isCloseModal={isCloseModal}
+          openModal={openModal}
+          setOpenModal={setOpenModal}
+        />
+      )}
     </TableHead>
   );
 }
@@ -135,21 +143,21 @@ EnhancedTableHead.propTypes = {
   numSelected: PropTypes.number.isRequired,
   onRequestSort: PropTypes.func.isRequired,
   onSelectAllClick: PropTypes.func.isRequired,
-  order: PropTypes.oneOf(['asc', 'desc']).isRequired,
+  order: PropTypes.oneOf(["asc", "desc"]).isRequired,
   orderBy: PropTypes.string.isRequired,
   rowCount: PropTypes.number.isRequired,
 };
 
-export default function EnhancedTable({datas}) {
-  const [order, setOrder] = React.useState('asc');
-  const [orderBy, setOrderBy] = React.useState('calories');
+export default function EnhancedTable({ datas }) {
+  const [order, setOrder] = React.useState("asc");
+  const [orderBy, setOrderBy] = React.useState("calories");
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
   const handleRequestSort = (event, property) => {
-    const isAsc = orderBy === property && order === 'asc';
-    setOrder(isAsc ? 'desc' : 'asc');
+    const isAsc = orderBy === property && order === "asc";
+    setOrder(isAsc ? "desc" : "asc");
     setOrderBy(property);
   };
 
@@ -177,10 +185,10 @@ export default function EnhancedTable({datas}) {
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - datas.length) : 0;
 
-  const [ editData, setEditData ] = useState({})
-  const [ openEditor, setOpenEditor ] = useState(false);
-  const isOpen = () => setOpenEditor(true)
-  const isClose = () => setOpenEditor(false)
+  const [editData, setEditData] = useState({});
+  const [openEditor, setOpenEditor] = useState(false);
+  const isOpen = () => setOpenEditor(true);
+  const isClose = () => setOpenEditor(false);
 
   const findData = (item) => {
     setEditData({
@@ -189,15 +197,15 @@ export default function EnhancedTable({datas}) {
       state: item.state,
       url: item.url,
       created: item.created,
-      updated: item.updated
-    })
-    setOpenEditor(true)
-  }
+      updated: item.updated,
+    });
+    setOpenEditor(true);
+  };
 
-  const [ deleteOne, setDeleteOne ] = useState({});
-  const [ openConfirm, setOpenConfirm ] = useState(false);
-  const isConfirm = () => setOpenConfirm(true)
-  const isNotConfirm = () => setOpenConfirm(false)
+  const [deleteOne, setDeleteOne] = useState({});
+  const [openConfirm, setOpenConfirm] = useState(false);
+  const isConfirm = () => setOpenConfirm(true);
+  const isNotConfirm = () => setOpenConfirm(false);
 
   const deleteDataDetails = (item) => {
     setDeleteOne({
@@ -206,19 +214,16 @@ export default function EnhancedTable({datas}) {
       state: item.state,
       url: item.url,
       created: item.created,
-      updated: item.updated 
-    })
-    setOpenConfirm(true)
-  }
+      updated: item.updated,
+    });
+    setOpenConfirm(true);
+  };
 
   return (
-    <Box sx={{ width: '100%'}}>
-      <Paper sx={{ width: '100%', mb: 2 }}>
+    <Box sx={{ width: "100%" }}>
+      <Paper sx={{ width: "100%", mb: 2 }}>
         <TableContainer>
-          <Table
-            sx={{ minWidth: 750 }}
-            aria-labelledby="tableTitle"
-          >
+          <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle">
             <EnhancedTableHead
               numSelected={selected.length}
               order={order}
@@ -259,19 +264,41 @@ export default function EnhancedTable({datas}) {
                       <TableCell align="right">{row.created}</TableCell>
                       <TableCell align="right">{row.updated}</TableCell>
                       <TableCell align="right">
-                        <EditIcon color='secondary' sx={{cursor: 'pointer'}} onClick={() => findData(row)}/>
-                        <DeleteIcon color='secondary' sx={{cursor: 'pointer'}} onClick={() => deleteDataDetails(row)}/>
+                        <EditIcon
+                          color="secondary"
+                          sx={{ cursor: "pointer" }}
+                          onClick={() => findData(row)}
+                        />
+                        <DeleteIcon
+                          color="secondary"
+                          sx={{ cursor: "pointer" }}
+                          onClick={() => deleteDataDetails(row)}
+                        />
                       </TableCell>
                     </TableRow>
                   );
                 })}
               {emptyRows > 0 && (
                 <TableRow>
-                  <TableCell colSpan={6}/>
+                  <TableCell colSpan={6} />
                 </TableRow>
               )}
-              {openEditor && <EditData editData={editData} isOpen={isOpen} isClose={isClose} setOpenEditor={setOpenEditor}/>}
-              {openConfirm && <DeleteData deleteOne={deleteOne} setOpenConfirm={setOpenConfirm} isConfirm={isConfirm} isNotConfirm={isNotConfirm}/>}
+              {openEditor && (
+                <EditData
+                  editData={editData}
+                  isOpen={isOpen}
+                  isClose={isClose}
+                  setOpenEditor={setOpenEditor}
+                />
+              )}
+              {openConfirm && (
+                <DeleteData
+                  deleteOne={deleteOne}
+                  setOpenConfirm={setOpenConfirm}
+                  isConfirm={isConfirm}
+                  isNotConfirm={isNotConfirm}
+                />
+              )}
             </TableBody>
           </Table>
         </TableContainer>
@@ -283,7 +310,7 @@ export default function EnhancedTable({datas}) {
           page={page}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
-          sx={{fontSize: 12}}
+          sx={{ fontSize: 12 }}
         />
       </Paper>
     </Box>
